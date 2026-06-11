@@ -151,5 +151,62 @@ def list_reservations(args):
               f"Check-out: {reservation['check_out']}"
         )    
 
-        
+def main():
+    parser = argparse.ArgumentParser(
+        description="Hotel Booking System"
+    )
+
+    subparsers = parser.add_subparsers(dest="command")
+
+    # add-guest
+    guest_parser = subparsers.add_parser("add-guest")
+    guest_parser.add_argument("--name", required=True)
+    guest_parser.add_argument("--email", required=True)
+    guest_parser.set_defaults(func=add_guest)
+
+    # list-guests
+    list_guest_parser = subparsers.add_parser("list-guests")
+    list_guest_parser.set_defaults(func=list_guests)
+
+    # add-room
+    room_parser = subparsers.add_parser("add-room")
+    room_parser.add_argument("--number", type=int, required=True)
+    room_parser.add_argument("--type", required=True)
+    room_parser.set_defaults(func=add_room)
+
+    # list-rooms
+    list_room_parser = subparsers.add_parser("list-rooms")
+    list_room_parser.set_defaults(func=list_rooms)
+
+    # book-room
+    booking_parser = subparsers.add_parser("book-room")
+    booking_parser.add_argument("--email", required=True)
+    booking_parser.add_argument("--room", type=int, required=True)
+    booking_parser.add_argument("--checkin", required=True)
+    booking_parser.add_argument("--checkout", required=True)
+    booking_parser.set_defaults(func=book_room)
+
+    # checkout
+    checkout_parser = subparsers.add_parser("checkout")
+    checkout_parser.add_argument("--room", type=int, required=True)
+    checkout_parser.set_defaults(func=checkout)
+
+    # list-reservations
+    reservation_parser = subparsers.add_parser(
+        "list-reservations"
+    )
+    reservation_parser.set_defaults(
+        func=list_reservations
+    )
+
+    args = parser.parse_args()
+
+    if hasattr(args, "func"):
+        args.func(args)
+    else:
+        parser.print_help()
+
+
+if __name__ == "__main__":
+    main()       
     
