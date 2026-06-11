@@ -22,4 +22,15 @@ def add_guest(args):
     })    
 
     save_data(data)
-    print(f"Guest '{guest.name}' added successfully with ID {guest.id}.")   
+    print(f"Guest '{guest.name}' added successfully with ID {guest.id}.")
+
+
+def list_guests(args):
+    data = load_data()
+
+    if not data['guests']:
+        print("No guests found.")
+        return
+
+    for g in data['guests']:
+        print(f"ID: {g['id']}, Name: {g['name']}, Email: {g['email']}, Age: {g['age']}")       
