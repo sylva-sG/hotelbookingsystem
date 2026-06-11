@@ -1,5 +1,25 @@
 {
-  "guests": [],
-  "rooms": [],
+  "guests": [
+    {
+      "id": 1,
+      "name": "Zion",
+      "email": "zion@gmail.com",
+      "phone": "-"
+    },
+    {
+      "id": 2,
+      "name": "Test",
+      "email": "test@gmail.com",
+      "phone": "-"
+    }
+  ],
+  "rooms": [
+    {
+      "room_number": 101,
+      "room_type": "deluxe",
+      "price": 5000.0,
+      "available": true
+    }
+  ],
   "reservations": []
 }
