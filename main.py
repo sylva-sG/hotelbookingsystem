@@ -3,62 +3,83 @@ from models.guest import Guest
 from models.room import Room
 from models.reservation import Reservation
 from utils.storage import load_data, save_data
+from types import SimpleNamespace
+from utils.display import display_guests, display_rooms
 
+
+# ======================
 # GUEST
+# ======================
 
 def add_guest(args):
     data = load_data()
 
     try:
-        guest = Guest(args.name, args.email, args.age)
+        guest = Guest(args.name, args.email)
     except ValueError as e:
         print(f"Error: {e}")
         return
 
+    next_id = len(data.get("guests", [])) + 1
+
     data['guests'].append({
-        "id": guest.id,
+        "id": next_id,
         "name": guest.name,
         "email": guest.email,
-        "age": guest.age
-    })    
+        "phone": guest.phone or "-"
+    })
 
     save_data(data)
-    print(f"Guest '{guest.name}' added successfully with ID {guest.id}.")
+    print(f"Guest '{guest.name}' added successfully.")
 
 
 def list_guests(args):
     data = load_data()
 
-    if not data['guests']:
+    guests = data.get("guests", [])
+
+    if not guests:
         print("No guests found.")
         return
 
-    for g in data['guests']:
-        print(f"ID: {g['id']}, Name: {g['name']}, Email: {g['email']}, Age: {g['age']}") 
+    wrapped = [
+        SimpleNamespace(
+            guest_id=g["id"],
+            name=g["name"],
+            email=g["email"],
+            phone=g.get("phone", "-")
+        )
+        for g in guests
+    ]
+
+    display_guests(wrapped)
 
 
+# ======================
 # ROOM
+# ======================
 
 def add_room(args):
     data = load_data()
 
     try:
-        room = Room(args.number, args.type)
+        room = Room(args.number, args.type, args.price)
     except ValueError as e:
         print(f"Error: {e}")
         return
 
     data["rooms"].append({
-        "id": room.id,
-        "room_number": room.room_number,
+        "room_number": room.number,
         "room_type": room.room_type,
-        "price": room.price
+        "price": room.price_per_night,
+        "available": room.available
     })
 
     save_data(data)
-    print(f"Room added successfully")
+    print(f"Room {room.number} added successfully.")
 
-def list_rooms(args):    
+
+def list_rooms(args):
     data = load_data()
 
     rooms = data.get("rooms", [])
@@ -67,72 +88,78 @@ def list_rooms(args):
         print("No rooms found.")
         return
 
-    for room in rooms:
-        status = "Available" if room["available"] else "Booked"
-        print(f"Room {room['room_number']} | "
-              f"Type: {room['room_type']} | "
-              f"Status: {status}"
-  )
-        
+    wrapped = [
+        SimpleNamespace(
+            number=r["room_number"],
+            room_type=r["room_type"],
+            price_per_night=r["price"],
+            available=r["available"]
+        )
+        for r in rooms
+    ]
+
+    display_rooms(wrapped)
+
+
+# ======================
+# BOOKING
+# ======================
+
 def book_room(args):
     data = load_data()
 
-    guest_email = args.email
-    room_number = args.room
-
-    guest = next((g for g in data['guests'] if g['email'] == guest_email), None)
+    guest = next((g for g in data["guests"] if g["email"] == args.email), None)
+    room = next((r for r in data["rooms"] if r["room_number"] == args.room), None)
 
     if not guest:
-        print(f"No guest found.")
+        print("Guest not found.")
         return
-    
-    room = next((r for r in data['rooms'] if r['room_number'] == room_number), None)
 
     if not room:
-        print(f"No room found.")
+        print("Room not found.")
         return
-    
-    if not room['available']:
-        print(f"Room {room_number} is already booked.")
+
+    if not room["available"]:
+        print("Room already booked.")
         return
-    
+
     reservation = {
-        "guest_email": guest_email,
-        "room_number": room_number,
-        "check_in": args.check_in,
-        "check_out": args.check_out
+        "guest_email": args.email,
+        "room_number": args.room,
+        "check_in": args.checkin,
+        "check_out": args.checkout
     }
 
     data.setdefault("reservations", []).append(reservation)
-    room['available'] = False
+    room["available"] = False
 
     save_data(data)
-    print(f"Room booked successfully.")
+    print("Booking successful.")
+
 
 def checkout(args):
     data = load_data()
 
-    room_number = args.room
-
     reservations = data.get("reservations", [])
 
     reservation = next(
-        (r for r in reservations if r['room_number'] == room_number), None
+        (r for r in reservations if r["room_number"] == args.room),
+        None
     )
 
     if not reservation:
-        print(f"No reservation found.")
+        print("Reservation not found.")
         return
-    
+
     reservations.remove(reservation)
 
     for room in data.get("rooms", []):
-        if room['room_number'] == room_number:
-            room['available'] = True
+        if room["room_number"] == args.room:
+            room["available"] = True
             break
 
     save_data(data)
-    print(f"Checked out successfully.")
+    print("Checkout successful.")
 
 
 def list_reservations(args):
@@ -144,60 +171,54 @@ def list_reservations(args):
         print("No reservations found.")
         return
 
-    for reservation in reservations:
-        print(f"Guest Email: {reservation['guest_email']} | "
-              f"Room Number: {reservation['room_number']} | "
-              f"Check-in: {reservation['check_in']} | "
-              f"Check-out: {reservation['check_out']}"
-        )    
+    for r in reservations:
+        print(
+            f"{r['guest_email']} | Room {r['room_number']} | "
+            f"{r['check_in']} → {r['check_out']}"
+        )
+
+
+# ======================
+# CLI
+# ======================
 
 def main():
-    parser = argparse.ArgumentParser(
-        description="Hotel Booking System"
-    )
-
+    parser = argparse.ArgumentParser("Hotel Booking System")
     subparsers = parser.add_subparsers(dest="command")
 
-    # add-guest
-    guest_parser = subparsers.add_parser("add-guest")
-    guest_parser.add_argument("--name", required=True)
-    guest_parser.add_argument("--email", required=True)
-    guest_parser.set_defaults(func=add_guest)
+    # guest
+    g = subparsers.add_parser("add-guest")
+    g.add_argument("--name", required=True)
+    g.add_argument("--email", required=True)
+    g.set_defaults(func=add_guest)
 
-    # list-guests
-    list_guest_parser = subparsers.add_parser("list-guests")
-    list_guest_parser.set_defaults(func=list_guests)
+    lg = subparsers.add_parser("list-guests")
+    lg.set_defaults(func=list_guests)
 
-    # add-room
-    room_parser = subparsers.add_parser("add-room")
-    room_parser.add_argument("--number", type=int, required=True)
-    room_parser.add_argument("--type", required=True)
-    room_parser.set_defaults(func=add_room)
+    # room
+    r = subparsers.add_parser("add-room")
+    r.add_argument("--number", type=int, required=True)
+    r.add_argument("--type", required=True)
+    r.add_argument("--price", type=float, required=True)
+    r.set_defaults(func=add_room)
 
-    # list-rooms
-    list_room_parser = subparsers.add_parser("list-rooms")
-    list_room_parser.set_defaults(func=list_rooms)
+    lr = subparsers.add_parser("list-rooms")
+    lr.set_defaults(func=list_rooms)
 
-    # book-room
-    booking_parser = subparsers.add_parser("book-room")
-    booking_parser.add_argument("--email", required=True)
-    booking_parser.add_argument("--room", type=int, required=True)
-    booking_parser.add_argument("--checkin", required=True)
-    booking_parser.add_argument("--checkout", required=True)
-    booking_parser.set_defaults(func=book_room)
+    # booking
+    b = subparsers.add_parser("book-room")
+    b.add_argument("--email", required=True)
+    b.add_argument("--room", type=int, required=True)
+    b.add_argument("--checkin", required=True)
+    b.add_argument("--checkout", required=True)
+    b.set_defaults(func=book_room)
 
-    # checkout
-    checkout_parser = subparsers.add_parser("checkout")
-    checkout_parser.add_argument("--room", type=int, required=True)
-    checkout_parser.set_defaults(func=checkout)
+    c = subparsers.add_parser("checkout")
+    c.add_argument("--room", type=int, required=True)
+    c.set_defaults(func=checkout)
 
-    # list-reservations
-    reservation_parser = subparsers.add_parser(
-        "list-reservations"
-    )
-    reservation_parser.set_defaults(
-        func=list_reservations
-    )
+    lrsv = subparsers.add_parser("list-reservations")
+    lrsv.set_defaults(func=list_reservations)
 
     args = parser.parse_args()
 
@@ -208,5 +229,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()       
-    
+    main()
