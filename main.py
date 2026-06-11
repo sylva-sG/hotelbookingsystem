@@ -133,4 +133,23 @@ def checkout(args):
 
     save_data(data)
     print(f"Checked out successfully.")
+
+
+def list_reservations(args):
+    data = load_data()
+
+    reservations = data.get("reservations", [])
+
+    if not reservations:
+        print("No reservations found.")
+        return
+
+    for reservation in reservations:
+        print(f"Guest Email: {reservation['guest_email']} | "
+              f"Room Number: {reservation['room_number']} | "
+              f"Check-in: {reservation['check_in']} | "
+              f"Check-out: {reservation['check_out']}"
+        )    
+
+        
     
