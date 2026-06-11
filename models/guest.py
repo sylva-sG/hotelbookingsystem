@@ -1,5 +1,5 @@
-from person import Person
-
+from models.person import Person
+print("Import works")
 class Guest(Person):
 
     guest_count = 0
@@ -28,5 +28,3 @@ class Guest(Person):
     def __str__(self):
         return f"Guest ID: {self.id} | {self.name} | {self.email}"
     
-guest = Guest("sylvans", "sylvans@example.com")
-print(guest)
