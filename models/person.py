@@ -6,5 +6,4 @@ class Person:
     def __str__(self):
         return f"name: {self.name}, age: {self.age}"
     
-person1 = Person("sylvans", 18)
-print(person1)
+
