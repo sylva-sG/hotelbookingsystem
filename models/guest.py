@@ -1,17 +1,21 @@
 from models.person import Person
-print("Import works")
+
 class Guest(Person):
 
-    guest_count = 0
+    
 
-    def __init__(self, name, email):
+    def __init__(self, name, email, guest_id=None):
         super().__init__(name, age=None)
-        self.email = email
-        Guest.guest_count += 1
-        self.id = Guest.guest_count
+        self.id = guest_id
         self.email = email
         self.reservations = []
-
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "reservations": [res.to_dict() for res in self.reservations]
+        }
     @property
     def email(self):
         return self._email

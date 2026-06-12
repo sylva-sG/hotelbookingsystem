@@ -1,0 +1,35 @@
+{
+    "users": [],
+    "guests": [
+        {
+            "id": 1,
+            "name": "manasseh",
+            "email": "man@gmail.com",
+            "reservations": []
+        },
+        {
+            "id": 2,
+            "name": "Leo",
+            "email": "leo@gmail.com",
+            "reservations": []
+        }
+    ],
+    "rooms": [
+        {
+            "id": 1,
+            "room_number": 101,
+            "room_type": "Deluxe",
+            "available": true
+        }
+    ],
+    "reservations": [
+        {
+            "id": 1,
+            "guest_id": 2,
+            "room_id": 1,
+            "check_in": "2026-06-20",
+            "check_out": "2026-06-25",
+            "status": "Active"
+        }
+    ]
+}

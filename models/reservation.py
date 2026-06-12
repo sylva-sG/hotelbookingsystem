@@ -1,25 +1,36 @@
 class Reservation:
-     reservation_count = 0
+    
 
-     def __init__(self, guest, room, check_in, check_out):
-          Reservation.reservation_count += 1
+    def __init__(
+        self,
+        guest_id,
+        room_id,
+        check_in,
+        check_out,
+        reservation_id=None
+    ):
+        self.id = reservation_id
+        self.guest_id = guest_id
+        self.room_id = room_id
+        self.check_in = check_in
+        self.check_out = check_out
+        self.status = "Active"
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "guest_id": self.guest_id,
+            "room_id": self.room_id,
+            "check_in": self.check_in,
+            "check_out": self.check_out,
+            "status": self.status
+        }
 
-          self.id = Reservation.reservation_count
-          self.guest = guest
-          self.room = room
-
-          self.check_in = check_in
-          self.check_out = check_out
-
-          self.status = "Booked"
-
-     def check_out_guest(self):
+    def check_out_guest(self):
         self.status = "Checked Out"
-        self.room.available = True
-     def __str__(self):
-          return (
-            f"Reservation #{self.id} | "
-            f"{self.guest.name} | "
-            f"Room {self.room.number} | "
-            f"{self.status}"
-        )
+    def __str__(self):
+     return (
+        f"Reservation #{self.id} | "
+        f"Guest ID: {self.guest_id} | "
+        f"Room ID: {self.room_id} | "
+        f"{self.status}"
+    )
