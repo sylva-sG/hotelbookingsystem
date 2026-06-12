@@ -5,13 +5,185 @@ from models.guest import Guest
 from models.room import Room
 from models.reservation import Reservation
 from utils.id_generator import get_next_id
-from utils.auth import register, login, logout
+from utils.auth import login, logout, register, get_current_user
+
 from utils.decorators import login_required, admin_required
 
 
-# =========================
+
 # GUEST
-# =========================
+
+from utils.auth import login, logout, register, get_current_user
+# imports
+from utils.auth import login, register, logout, get_current_user
+...
+
+
+# HELPERS 
+
+class SimpleArgs:
+    def __init__(self, name=None, email=None, number=None, room_type=None):
+        self.name = name
+        self.email = email
+        self.number = number
+        self.room_type = room_type
+
+
+class SimpleRes:
+    def __init__(self, email, room_id, check_in, check_out):
+        self.email = email
+        self.room_id = room_id
+        self.check_in = check_in
+        self.check_out = check_out
+
+
+
+# MENU FUNCTION BELOW
+
+def interactive_menu():
+    ...
+
+def interactive_menu():
+
+    while True:
+
+        user = get_current_user()
+
+        print("\n===== HOTEL SYSTEM =====")
+
+        
+        # NOT LOGGED IN MENU
+       
+        if not user:
+            print("1. Register")
+            print("2. Login")
+            print("3. Exit")
+
+            choice = input("Choose: ")
+
+            if choice == "1":
+                username = input("Username: ")
+                password = input("Password: ")
+                register(username, password, "user")
+
+            elif choice == "2":
+                username = input("Username: ")
+                password = input("Password: ")
+                login(username, password)
+
+            elif choice == "3":
+                break
+
+            else:
+                print("Invalid choice")
+
+       
+        # LOGGED IN MENU
+        
+        else:
+            print(f"Logged in as: {user.username} ({user.role})")
+
+           
+            # ADMIN MENU
+            
+            if user.role == "admin":
+
+                print("1. Add Guest")
+                print("2. List Guests")
+                print("3. Add Room")
+                print("4. List Rooms")
+                print("5. Add Reservation")
+                print("6. List Reservations")
+                print("7. Logout")
+                print("8. Exit")
+
+                choice = input("Choose: ")
+
+                if choice == "1":
+                    name = input("Guest name: ")
+                    email = input("Email: ")
+
+                    class Args: pass
+                    args = Args()
+                    args.name = name
+                    args.email = email
+
+                    add_guest(args)
+
+                elif choice == "2":
+                    list_guests(None)
+
+                elif choice == "3":
+                    number = input("Room number: ")
+                    room_type = input("Room type: ")
+
+                    class Args: pass
+                    args = Args()
+                    args.number = int(number)
+                    args.room_type = room_type
+
+                    add_room(args)
+
+                elif choice == "4":
+                    list_rooms(None)
+
+                elif choice == "5":
+                    email = input("Guest email: ")
+                    room_id = input("Room ID: ")
+                    check_in = input("Check in (YYYY-MM-DD): ")
+                    check_out = input("Check out (YYYY-MM-DD): ")
+
+                    class Args: pass
+                    args = Args()
+                    args.email = email
+                    args.room_id = int(room_id)
+                    args.check_in = check_in
+                    args.check_out = check_out
+
+                    add_reservation(args)
+
+                elif choice == "6":
+                    list_reservations(None)
+
+                elif choice == "7":
+                    logout()
+
+                elif choice == "8":
+                    break
+
+                else:
+                    print("Invalid choice")
+
+            # -------------------------
+            # USER MENU (READ ONLY)
+            # -------------------------
+            else:
+
+                print("1. List Guests")
+                print("2. List Rooms")
+                print("3. List Reservations")
+                print("4. Logout")
+                print("5. Exit")
+
+                choice = input("Choose: ")
+
+                if choice == "1":
+                    list_guests(None)
+
+                elif choice == "2":
+                    list_rooms(None)
+
+                elif choice == "3":
+                    list_reservations(None)
+
+                elif choice == "4":
+                    logout()
+
+                elif choice == "5":
+                    break
+
+                else:
+                    print("Invalid choice")
 def parse_date(date_str):
     return datetime.strptime(date_str, "%Y-%m-%d")
 
@@ -60,7 +232,7 @@ def list_reservations(args):
         room = get_room_by_id(data, r["room_id"])
 
         guest_name = guest["name"] if guest else "Unknown Guest"
-        room_number = room["number"] if room else "Unknown Room"
+        room_number = room["room_number"] if room else "Unknown Room"
 
         print(
             f"Reservation #{r['id']} | "
@@ -191,9 +363,9 @@ def main():
 )
 
 
-    # =========================
+    
     # ROOM COMMANDS (ADMIN ONLY)
-    # =========================
+    
 
     add_room_parser = subparsers.add_parser("add-room")
     add_room_parser.add_argument("--number", type=int, required=True)
@@ -209,9 +381,8 @@ def main():
     list_res_parser.set_defaults(
     func=lambda args: admin_required(list_reservations)(args)
 )
-    # =========================
     # RESERVATION (LOGIN REQUIRED)
-    # =========================
+  
 
     add_res_parser = subparsers.add_parser("add-reservation")
     add_res_parser.add_argument("--name", required=True)
@@ -225,9 +396,9 @@ def main():
     )
 
 
-    # =========================
+    
     # AUTH COMMANDS
-    # =========================
+   
 
     register_parser = subparsers.add_parser("register")
     register_parser.add_argument("--username", required=True)
@@ -255,10 +426,9 @@ def main():
     args = parser.parse_args()
 
     if hasattr(args, "func"):
-        args.func(args)
+     args.func(args)
     else:
-        parser.print_help()
-
+     interactive_menu()
 
 if __name__ == "__main__":
     main()
