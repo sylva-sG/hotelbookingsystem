@@ -259,9 +259,9 @@ def list_guests(args):
         print(f"ID: {g['id']} | Name: {g['name']} | Email: {g['email']}")
 
 
-# =========================
+
 # ROOM
-# =========================
+
 
 def add_room(args):
     data = load_data()
@@ -289,9 +289,8 @@ def list_rooms(args):
         print(r)
 
 
-# =========================
 # RESERVATION
-# =========================
+
 
 def add_reservation(args):
     data = load_data()
@@ -337,18 +336,18 @@ def add_reservation(args):
 
     print("Reservation created successfully")
 
-# =========================
+
 # CLI SETUP
-# =========================
+
 
 def main():
     parser = argparse.ArgumentParser(description="Hotel Booking System CLI")
     subparsers = parser.add_subparsers(dest="command")
 
 
-    # =========================
+   
     # GUEST COMMANDS
-    # =========================
+  
 
     add_guest_parser = subparsers.add_parser("add-guest")
     add_guest_parser.add_argument("--name", required=True)
