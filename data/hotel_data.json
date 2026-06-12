@@ -1,5 +1,24 @@
 {
-    "users": [],
+    "users": [
+        {
+            "id": 4,
+            "username": "hessy",
+            "password_hash": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+            "role": "user"
+        },
+        {
+            "id": 5,
+            "username": "Admin",
+            "password_hash": "9af15b336e6a9619928537df30b2e6a2376569fcf9d7e773eccede65606529a0",
+            "role": "admin"
+        },
+        {
+            "id": 1,
+            "username": "admin",
+            "password_hash": "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4",
+            "role": "admin"
+        }
+    ],
     "guests": [
         {
             "id": 1,
@@ -12,6 +31,18 @@
             "name": "Leo",
             "email": "leo@gmail.com",
             "reservations": []
+        },
+        {
+            "id": 3,
+            "name": "sylvans",
+            "email": "sylv@gmail.com",
+            "reservations": []
+        },
+        {
+            "id": 4,
+            "name": "Jacob",
+            "email": "jac@gmail.com",
+            "reservations": []
         }
     ],
     "rooms": [
@@ -19,6 +50,18 @@
             "id": 1,
             "room_number": 101,
             "room_type": "Deluxe",
+            "available": true
+        },
+        {
+            "id": 2,
+            "room_number": 2,
+            "room_type": "multi",
+            "available": true
+        },
+        {
+            "id": 3,
+            "room_number": 102,
+            "room_type": "double",
             "available": true
         }
     ],
