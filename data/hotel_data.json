@@ -1,0 +1,12 @@
+{
+    "guests": [],
+    "rooms": [
+        {
+            "id": 1,
+            "room_number": 103,
+            "room_type": "double",
+            "available": true
+        }
+    ],
+    "reservations": []
+}

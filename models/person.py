@@ -2,10 +2,14 @@ class Person:
     def __init__(self, name, age=None):
         self.name = name
         self.age = age
-
-    @property
-    def name(self):
-        return self._name
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "age": self.age
+        }
+    def __str__(self):
+        return f"name: {self.name}, age: {self.age}"
+    
 
     @name.setter
     def name(self, value):

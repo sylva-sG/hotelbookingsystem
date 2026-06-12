@@ -1,27 +1,18 @@
 import json
-import os
 
-DATA_FILE = "data/database.json"
+def save_data(data, filename="data/hotel_data.json"):
+    with open(filename, 'w') as file:
+        json.dump(data, file, indent=4)
 
-DEFAULT_DATA = {
-    "guests": [],
-    "rooms": [],
-    "reservations": []
-}
+def load_data(filename="data/hotel_data.json"):
 
-def load_data():
     try:
-        with open(DATA_FILE, "r") as f:
-            return json.load(f)
-    except FileNotFoundError:
-        save_data(DEFAULT_DATA)
-        return DEFAULT_DATA
-    except json.JSONDecodeError:
-        print("Warning: database.json is corrupted. Starting fresh.")
-        save_data(DEFAULT_DATA)
-        return DEFAULT_DATA
+        with open(filename, "r") as file:
+            return json.load(file)
 
-def save_data(data):
-    os.makedirs(os.path.dirname(DATA_FILE), exist_ok=True)
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=2)
+    except FileNotFoundError:
+        return {
+            "guests": [],
+            "rooms": [],
+            "reservations": []
+        }

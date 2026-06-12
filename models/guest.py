@@ -1,19 +1,21 @@
 from models.person import Person
 
-
 class Guest(Person):
-    guest_count = 0
-    _all_guests = []
 
-    def __init__(self, name, email, phone=None):
-        super().__init__(name)
+    
+
+    def __init__(self, name, email, guest_id=None):
+        super().__init__(name, age=None)
+        self.id = guest_id
         self.email = email
-        self.phone = phone
-        Guest.guest_count += 1
-        self.guest_id = Guest.guest_count
         self.reservations = []
-        Guest._all_guests.append(self)
-
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "email": self.email,
+            "reservations": [res.to_dict() for res in self.reservations]
+        }
     @property
     def email(self):
         return self._email
